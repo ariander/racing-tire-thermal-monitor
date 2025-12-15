@@ -1,0 +1,41 @@
+# Arduino build files
+*.hex
+*.eep
+*.elf
+*.map
+
+# Arduino IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Compiled Object files
+*.o
+*.obj
+
+# Backup files
+*~
+*.bak
+*.swp
+*.tmp
+
+# Test files (keep only stable versions)
+*_test/
+*_demo/
+satellite_dummy/
+
+# User-specific TFT_eSPI config (users must configure their own)
+# libraries/TFT_eSPI/User_Setup.h
+
+# Logs
+*.log
