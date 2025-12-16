@@ -1,33 +1,37 @@
 /*
- * TIRE TEMP SATELLITE - MINIMAL & STABLE
- * ESP32-WROOM-32 + GY-MCU90640 (med SET I2C loddet!) + CAN
+ * TIRE TEMP SATELLITE - ESP32-C3 SUPER MINI
+ * ESP32-C3 Super Mini + GY-MCU90640 (med SET I2C loddet!) + CAN
  *
  * KABLING:
  * --------
  * GY-MCU90640:
  *   VIN  → 3.3V
  *   GND  → GND
- *   SDA  → GPIO 21
- *   SCL  → GPIO 22
+ *   SDA  → GPIO 8  (C3 standard I2C)
+ *   SCL  → GPIO 9  (C3 standard I2C)
  *   VIKTIG: "SET I2C" må være loddet sammen!
  *
  * CAN Transceiver:
- *   TX   → GPIO 5
- *   RX   → GPIO 4
+ *   TX   → GPIO 2
+ *   RX   → GPIO 3
+ *
+ * VIKTIG: ESP32-C3 har færre GPIO enn WROOM!
+ *         Kode er identisk, kun pin-definisjonene er endret.
  */
 
 #include <Wire.h>
 #include <Adafruit_MLX90640.h>
 #include "driver/twai.h"
 
-// KONFIGURASJON
-#define WHEEL_ID 0x10
-const char* WHEEL_NAME = "FL";
+// KONFIGURASJON - ENDRE FOR HVERT HJUL!
+#define WHEEL_ID 0x11     // FL: 0x10, FR: 0x11, RL: 0x12, RR: 0x13
+const char* WHEEL_NAME = "FR";
 
-#define CAN_TX_PIN 5
-#define CAN_RX_PIN 4
-#define MLX_SDA 21
-#define MLX_SCL 22
+// ESP32-C3 SUPER MINI PINS
+#define CAN_TX_PIN 2
+#define CAN_RX_PIN 3
+#define MLX_SDA 8      // Standard I2C for C3
+#define MLX_SCL 9      // Standard I2C for C3
 
 // Objekter
 Adafruit_MLX90640 mlx;
@@ -42,7 +46,7 @@ void setup() {
     Serial.begin(115200);
     delay(100);
 
-    Serial.println("\n=== TIRE TEMP: " + String(WHEEL_NAME) + " ===\n");
+    Serial.println("\n=== TIRE TEMP: " + String(WHEEL_NAME) + " (ESP32-C3) ===\n");
 
     // I2C
     Wire.begin(MLX_SDA, MLX_SCL);
