@@ -12,6 +12,7 @@ Central dashboard displaying real-time thermal data from 4 tire temperature sate
 - ILI9341 2.8" TFT Display (320×240)
 - CAN transceiver (MCP2551 or SN65HVD230)
 - 120Ω termination resistors
+- Mode button (optional - built-in BOOT button on GPIO 1 works)
 
 ### Wiring
 ```
@@ -27,6 +28,10 @@ ILI9341 Display    ESP32-S3
 CAN Transceiver    ESP32-S3
     TX     ────────  GPIO 17
     RX     ────────  GPIO 18
+
+Mode Button        ESP32-S3
+    (optional)     GPIO 1  ──── GND (when pressed)
+                             (Built-in BOOT button works)
 ```
 
 ### TFT_eSPI Configuration
@@ -57,19 +62,49 @@ The screen shows 4 thermal heatmaps (one per wheel):
 
 ```
 ┌──────────────────────────────────┐
-│  FL           │  FR              │
+│  FL           │  FR      [MODE]  │
 │  ▓▓▓▓▓▓       │  NO SIGNAL       │
-│  22°-25°      │  0°-0°           │
+│  55°          │  --              │
 ├──────────────────────────────────┤
 │  RL           │  RR              │
 │  NO SIGNAL    │  NO SIGNAL       │
-│  0°-0°        │  0°-0°           │
+│  --           │  --              │
 ├──────────────────────────────────┤
-│ 0° ═══════════════════════ 100°  │
+│ 25° ═══════════════════════ 70°  │
 └──────────────────────────────────┘
 ```
 
-Colors: Blue (cold) → Purple → Red → Yellow → White (hot)
+**Heatmap Colors:** Blue (cold) → Purple → Red → Yellow → White (hot)
+
+**Temperature Display Colors:**
+- **Cyan**: <40°C (Cold)
+- **Green background**: 40-60°C (Ideal operating range)
+- **Yellow**: 60-75°C (Warm)
+- **Blinking Red**: >75°C (Critical overheating)
+
+## Display Modes
+
+Press the button on **GPIO 1** (BOOT button) to cycle through 3 display modes:
+
+### 1. FIXED Mode (Blue indicator)
+- Fixed temperature range: **25-70°C**
+- Best for consistent comparison between wheels
+- Temperatures outside range shown as min/max colors
+- Actual temperatures always shown in numbers
+
+### 2. DYNAMIC/WHEEL Mode (Red indicator)
+- Auto-adjusting range **per wheel**
+- Each wheel shows its own min-max range
+- Maximum detail for each individual wheel
+- Best for analyzing single wheel behavior
+
+### 3. DYNAMIC/GLOBAL Mode (Green indicator)
+- Auto-adjusting range **across all wheels**
+- All wheels share same temperature scale
+- Best for comparing wheel-to-wheel differences
+- Updates as global min/max changes
+
+**Mode indicator** shown as colored box (FIX/DYN/GLO) between upper wheels.
 
 ## Serial Output
 
@@ -94,6 +129,17 @@ RR: NO SIGNAL (age: 127s)
 - **CAN processing**: Up to 100 packets per loop
 - **Latency**: <100ms from CAN to display
 - **Memory**: ~8KB RAM for buffers
+- **Temperature tracking**: 30-second rolling maximum per wheel
+
+## Temperature Monitoring
+
+Each wheel displays the **maximum temperature** recorded in the last 30 seconds. This helps catch brief temperature spikes that might otherwise be missed during quick glances at the display.
+
+**Color-coded warnings:**
+- Temperatures <40°C show in **cyan** (tire needs heat)
+- Ideal range 40-60°C shows with **green background** (optimal)
+- Warm range 60-75°C shows in **yellow** (monitor closely)
+- Critical >75°C **blinks red** background (overheating risk)
 
 ## Troubleshooting
 
@@ -112,6 +158,12 @@ RR: NO SIGNAL (age: 127s)
 - This was a CAN buffer overflow issue
 - Solved by increasing RX buffer to 50 packets
 - Should not occur with current code
+
+**Mode button not working?**
+- Check GPIO 1 (BOOT button) is accessible
+- Button requires ~300ms debounce - don't press too quickly
+- Current mode shown as colored box (FIX/DYN/GLO) on display
+- External button can be connected to GPIO 1 (connect to GND when pressed)
 
 ## License
 

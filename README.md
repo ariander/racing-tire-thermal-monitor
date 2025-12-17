@@ -16,6 +16,8 @@ Each satellite reads thermal data from its wheel at 2 Hz and transmits compresse
 ✅ **Real-time thermal imaging** (2 Hz per wheel)
 ✅ **4 independent wheel sensors** (FL, FR, RL, RR)
 ✅ **Central dashboard** with live heatmaps
+✅ **3 display modes** (Fixed range, Dynamic per wheel, Global dynamic)
+✅ **Temperature warnings** (Color-coded: Cold, Ideal, Warm, Critical)
 ✅ **Budget-friendly** (~$95 total vs $400+ commercial)
 ✅ **Robust CAN bus** communication
 ✅ **Minimal latency** (<100ms sensor to display)
@@ -120,6 +122,19 @@ Each wheel sends 32×24 pixel thermal images compressed to 32×6 via vertical av
 - **Lazy updates**: Only redraws when new data arrives
 - **Iron colormap**: Intuitive blue→red→white temperature gradient
 - **Timeout handling**: Automatic "NO SIGNAL" display
+
+### Display Modes
+The dashboard supports 3 display modes (cycle with button on GPIO 1):
+- **FIXED (25-70°C)**: Fixed temperature range for consistent comparison
+- **DYNAMIC/WHEEL**: Auto-adjusting range per wheel for maximum detail
+- **DYNAMIC/GLOBAL**: Auto-adjusting range globally across all active wheels
+
+### Temperature Warnings
+Intelligent color-coded temperature display:
+- **<40°C (Cyan)**: Cold tire - needs heat
+- **40-60°C (Green background)**: Ideal operating range
+- **60-75°C (Yellow)**: Warm - monitor closely
+- **>75°C (Blinking Red)**: Critical - overheating risk
 
 ## Documentation
 
